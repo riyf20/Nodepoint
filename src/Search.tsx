@@ -11,7 +11,7 @@ import {
   updateSearchQuery,
 } from "./services/appwriteServices";
 import HomeCard from "./components/HomeCard";
-import GradientText from "./components/GradientText";
+import GradientText from "./components/reactbits/GradientText";
 
 function Search() {
   const [searchQuery, setSearchQuery] = useState("");

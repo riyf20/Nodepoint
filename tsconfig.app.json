@@ -28,5 +28,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "src/components/DotGrid.tsx"]
+  "include": ["src", "src/components/reactbits/DotGrid.tsx"]
 }

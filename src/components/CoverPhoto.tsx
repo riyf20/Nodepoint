@@ -1,5 +1,5 @@
-import Grainient from "./Grainient";
-import CircularText from "./CircularText";
+import Grainient from "./reactbits/Grainient";
+import CircularText from "./reactbits/CircularText";
 
 // Will will be used as the default cover for posts without images
 function CoverPhoto({ textScale }: CoverPhotoProps) {

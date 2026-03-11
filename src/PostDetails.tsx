@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import Grainient from "./components/Grainient";
+import Grainient from "./components/reactbits/Grainient";
 import {
   deleteComment,
   deletePicture,
@@ -41,8 +41,8 @@ import { images } from "./constants/images";
 import CommentBar from "./components/CommentBar";
 import { Spinner } from "./components/ui/spinner";
 import { EyeIcon, type ExternalLinkIconHandle } from "./components/ui/eye-icon";
-import CountUp from "./components/CountUp";
-import SpotlightCard from "./components/SpotlightCard";
+import CountUp from "./components/reactbits/CountUp";
+import SpotlightCard from "./components/reactbits/SpotlightCard";
 import { EllipsisVerticalIcon } from "./components/ui/ellipsis-vertical-icon";
 import {
   DropdownMenu,

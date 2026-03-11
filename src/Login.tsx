@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import DotGrid from "./components/DotGrid";
+import DotGrid from "./components/reactbits/DotGrid";
 import { Input } from "./components/ui/input";
 import { Field, FieldLabel } from "./components/ui/field";
 import { Button } from "./components/ui/button";
-import DecryptedText from "./components/DecryptedText";
-import Aurora from "./components/Aurora";
+import DecryptedText from "./components/reactbits/DecryptedText";
+import Aurora from "./components/reactbits/Aurora";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import {
   logIn,
@@ -67,7 +67,7 @@ function Login() {
   }, []);
 
   // Debug state
-  const debug = false
+  const debug = false;
 
   // Logs user in via appwrite session
   const handleLogInBackend = async () => {
