@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import DotGrid from "./components/reactbits/DotGrid";
+import DotGrid from "./components/DotGrid";
 import { Input } from "./components/ui/input";
 import { Field, FieldLabel } from "./components/ui/field";
 import { Button } from "./components/ui/button";
-import DecryptedText from "./components/reactbits/DecryptedText";
-import Aurora from "./components/reactbits/Aurora";
+import DecryptedText from "./components/DecryptedText";
+import Aurora from "./components/Aurora";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import {
   logIn,
@@ -23,7 +23,6 @@ import {
 } from "./components/ui/input-group";
 
 function Login() {
-
   // Logo special characters
   const logo = "{_}";
 
@@ -67,13 +66,12 @@ function Login() {
     check();
   }, []);
 
-  // Debug state 
-  const [debug, setDebug] = useState(false);
+  // Debug state
+  const debug = false
 
   // Logs user in via appwrite session
   const handleLogInBackend = async () => {
     try {
-
       const response = await logIn(email, password);
 
       // Store essential data
@@ -215,12 +213,21 @@ function Login() {
 
   // Reuseable input field component
   const formInput = ({ input, index }: formInputProps) => {
-
     // Input fields | Input setters | Input validity states | Input validity state setters
     const fields = [email, password, username, name];
     const setFields = [setEmail, setPassword, setUsername, setName];
-    const fieldInvalids = [emailInvalid,passwordInvalid,usernameInvalid,nameInvalid];
-    const setFieldInvalids = [setEmailInvalid,setPasswordInvalid,setUsernameInvalid,setNameInvalid];
+    const fieldInvalids = [
+      emailInvalid,
+      passwordInvalid,
+      usernameInvalid,
+      nameInvalid,
+    ];
+    const setFieldInvalids = [
+      setEmailInvalid,
+      setPasswordInvalid,
+      setUsernameInvalid,
+      setNameInvalid,
+    ];
 
     return (
       <Field>

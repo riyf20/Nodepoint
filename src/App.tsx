@@ -23,7 +23,7 @@ function App() {
       try {
         const user = await account.get();
         setLoggedIn(!!user);
-      } catch(error:any) {
+      } catch {
         setLoggedIn(false);
       }
     };

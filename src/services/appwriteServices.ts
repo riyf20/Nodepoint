@@ -46,7 +46,6 @@ export const logOut = async () => {
 
 }
 
-
 // [User Details]
 export const getUser = async () => {
     return await account.get()

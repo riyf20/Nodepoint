@@ -21,7 +21,7 @@ import {
 } from "./ui/chevron-down-icon";
 import { ChevronUpIcon, type ChevronUpIconHandle } from "./ui/chevron-up-icon";
 import CoverPhoto from "./CoverPhoto";
-import SpotlightCard from "./reactbits/SpotlightCard";
+import SpotlightCard from "./SpotlightCard";
 import { TrashIcon, type DashboardIconHandle } from "./ui/trash-icon";
 import { UserPenIcon, type UserPenHandle } from "./ui/user-pen-icon";
 import {
@@ -38,13 +38,13 @@ import {
   type SquareArrowOutUpRightIconHandle,
 } from "./ui/square-arrow-out-up-right-icon";
 import { useNavigate } from "react-router";
-import CountUp from "./reactbits/CountUp";
-import GradientText from "./reactbits/GradientText";
+import CountUp from "./CountUp";
+import GradientText from "./GradientText";
 
 // Post block used to show all users post in the posts page
 function PostCard({ post, delay, onDelete }: PostCardProps) {
   // Post's cover photo state
-  const [posterPicture, setPosterPicture] = useState(post.Pictures.length > 0);
+  const posterPicture = (post.Pictures.length > 0);
   const [miniPictureIds, setMiniPictureIds] = useState<string[]>([]);
 
   // If the block has been expanded

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Field } from "./components/ui/field";
-import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Card, CardContent, CardHeader } from "./components/ui/card";
 import { Skeleton } from "./components/ui/skeleton";
@@ -12,7 +11,7 @@ import {
   updateSearchQuery,
 } from "./services/appwriteServices";
 import HomeCard from "./components/HomeCard";
-import GradientText from "./components/reactbits/GradientText";
+import GradientText from "./components/GradientText";
 
 function Search() {
   const [searchQuery, setSearchQuery] = useState("");

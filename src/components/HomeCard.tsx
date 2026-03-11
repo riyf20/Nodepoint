@@ -10,7 +10,7 @@ import CoverPhoto from "./CoverPhoto";
 function HomeCard({ post, delay }: HomeCardProps) {
 
   // Posts image states
-  const [hasImages, setHasImages] = useState(post.Pictures.length > 0);
+  const hasImages = (post.Pictures.length > 0);
 
   const [coverImage, setCoverImage] = useState("");
 
