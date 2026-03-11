@@ -56,10 +56,21 @@ function Login() {
   // If user is logged in then will just route to homepage
   useEffect(() => {
     const check = async () => {
-      const user = await account.get();
+      // Checks Appwrite session cookie 
+      const hasSession = localStorage.getItem('sessionid')
 
-      if (!!user) {
-        navigate("/");
+      if (!hasSession) {
+        return;
+      }
+
+      try {
+        const user = await account.get();
+
+        if (user) {
+          navigate("/");
+        }
+      } catch {
+        // User is not logged in
       }
     };
 

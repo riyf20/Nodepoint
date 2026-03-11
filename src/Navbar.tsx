@@ -30,37 +30,44 @@ function Navbar() {
 
     // Checks if user is logged in
     useEffect(() => {
-        
+
         const checkUser = async () => {
+
+            // Checks Appwrite session cookie
+            const hasSession = localStorage.getItem('sessionid')
+
+            if (!hasSession) {
+                setLoggedIn(false)
+                return
+            }
+
             try {
-                // Checks with appwrite
+                // Double checks with Appwrite 
                 const user = await account.get()
 
-                // Converts object to booleon
-                setLoggedIn(!!user)
+                setLoggedIn(true)
 
                 const response = await getUserTable(user.$id)
-
 
                 localStorage.setItem('username', response.Username)
                 localStorage.setItem('likes', JSON.stringify(response.Likes))
                 localStorage.setItem('saves', JSON.stringify(response.Saves))
 
-                // If user had profile picture will store necessary data
-                if(response.ProfilePic) {
+                // If user has profile picture store data
+                if (response.ProfilePic) {
                     localStorage.setItem('profilePicture', response.ProfilePic)
                     localStorage.setItem('profilePictureId', response.ProfilePicId)
                     let link = getLivePicture(response.ProfilePicId)
                     setProfilePicLink(link)
                     setProfilePic(true)
                 }
-            } catch (error) {
+            } catch {
                 setLoggedIn(false)
             }
         }
 
         checkUser()
-    }, [location.pathname])    
+    }, [location.pathname])
 
     // Checks any changes done to profile picture (ex: changed in settings)
     useEffect(() => {
@@ -85,16 +92,15 @@ function Navbar() {
     useEffect(() => {
 
         const handleAuthChange = async () => {
-            try {
-                // Checks with appwrite
-                const user = await account.get()
-                setLoggedIn(!!user)
-            } catch {
-                // Default navbar 
+            const hasSession = localStorage.getItem('sessionid')
+
+            if (!hasSession) {
+                setLoggedIn(false)
                 setLoggedIn(false)
                 setProfilePic(false)
                 setProfilePicLink('')
             }
+            
         }
 
             window.addEventListener("auth-changed", handleAuthChange)

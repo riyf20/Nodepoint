@@ -779,7 +779,7 @@ function PostDetails() {
                   ) : (
                     <div className="text-white w-full flex flex-row gap-2 items-center shadow-2xl">
                       <div className="border p-2 w-9/10 rounded-lg text-center text-muted-foreground">
-                        <p>Log up to add a comment</p>
+                        <p>Log in to add a comment</p>
                       </div>
                       <div className="">
                         <Button
@@ -788,7 +788,7 @@ function PostDetails() {
                             navigate("/login");
                           }}
                         >
-                          Log up
+                          Log in
                         </Button>
                       </div>
                     </div>

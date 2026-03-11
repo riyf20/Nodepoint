@@ -57,7 +57,6 @@ export const getUserTable = async (userid:string) => {
         databaseId: import.meta.env.VITE_APPWRITE_DATABASE_ID,
         collectionId: import.meta.env.VITE_APPWRITE_DATABASE_USERS_TABLE,
         documentId: userid,
-
     });
 }
 

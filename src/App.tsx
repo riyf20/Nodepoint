@@ -10,6 +10,7 @@ import Account from './Account';
 import Posts from './Posts';
 import { account } from './lib/appwrite';
 import PostDetails from './PostDetails';
+import ScrollToTop from './components/ScrollToTop';
 
 // Main app logic | Routes
 function App() {
@@ -20,6 +21,15 @@ function App() {
   useEffect(() => {
 
     const checkUser = async () => {
+
+      // Checks Appwrite session cookie
+      const hasSession = localStorage.getItem('sessionid')
+
+      if (!hasSession) {
+        setLoggedIn(false);
+        return;
+      }
+
       try {
         const user = await account.get();
         setLoggedIn(!!user);
@@ -46,7 +56,7 @@ function App() {
     <Router>
 
       <Navbar />
-      
+      <ScrollToTop/>
       <Routes>
         {/* Valid paths for all users */}
         <Route path="/" element={<Home />} />

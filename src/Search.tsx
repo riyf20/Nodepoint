@@ -181,7 +181,7 @@ function Search() {
               {trending.map((item, index) => (
                 <div
                   className="w-full"
-                  id={index.toString()}
+                  key={index.toString()}
                   onClick={() => {
                     setSearchQuery(item);
                   }}
