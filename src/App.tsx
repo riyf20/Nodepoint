@@ -11,6 +11,8 @@ import Posts from './Posts';
 import { account } from './lib/appwrite';
 import PostDetails from './PostDetails';
 import ScrollToTop from './components/ScrollToTop';
+import Profile from './Profile';
+import { TooltipProvider } from './components/ui/tooltip';
 
 // Main app logic | Routes
 function App() {
@@ -53,27 +55,31 @@ function App() {
 
   return (
 
-    <Router>
+    <TooltipProvider>
+      <Router>
 
-      <Navbar />
-      <ScrollToTop/>
-      <Routes>
-        {/* Valid paths for all users */}
-        <Route path="/" element={<Home />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/login" element={<Login />} />
+        <Navbar />
+        <ScrollToTop/>
+        <Routes>
+          {/* Valid paths for all users */}
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/login" element={<Login />} />
 
-        {/* Protected paths for logged in users */}
-        <Route path='/createpost' element={ loggedIn ? <CreatePost /> : <Login/>  } /> 
-        <Route path='/account' element={ loggedIn ? <Account /> : <Login/>  } /> 
-        <Route path='/posts' element={ loggedIn ? <Posts /> : <Login/>  } /> 
-        <Route path='/post/:id' element={<PostDetails /> } /> 
+          {/* Protected paths for logged in users */}
+          <Route path='/createpost' element={ loggedIn ? <CreatePost /> : <Login/>  } /> 
+          <Route path='/account' element={ loggedIn ? <Account /> : <Login/>  } /> 
+          <Route path='/posts' element={ loggedIn ? <Posts /> : <Login/>  } /> 
+          <Route path='/post/:id' element={<PostDetails /> } /> 
+          <Route path='/profile/:id' element={<Profile /> } /> 
 
-        {/* Not found boundary */}
-        <Route path='*' element={<NotFound/>}></Route>
-      </Routes>
+          {/* Not found boundary */}
+          <Route path='*' element={<NotFound/>}></Route>
+        </Routes>
 
-    </Router>
+      </Router>
+      
+    </TooltipProvider>
   )
 }
 

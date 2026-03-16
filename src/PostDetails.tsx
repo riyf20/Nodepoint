@@ -1,72 +1,40 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Grainient from "./components/reactbits/Grainient";
-import {
-  deleteComment,
-  deletePicture,
-  deletePost,
-  fetchComments,
-  fetchSpecificPost,
-  getLivePicture,
-  getUserTable,
-  submitComment,
-  updateCommentPost,
-  updatePostContent,
-  updatePostLikes,
-  updatePostSaves,
-  updatePostViews,
-  updateUserLikes,
-  updateUserSaves,
+import { deleteComment, deletePicture, deletePost, fetchComments, 
+  fetchSpecificPost, getLivePicture, getUserTable, submitComment, 
+  updateCommentPost, updatePostContent, updatePostLikes, updatePostSaves, 
+  updatePostViews, updateUserLikes, updateUserSaves,
 } from "./services/appwriteServices";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi,
 } from "./components/ui/carousel";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+import { Card, CardContent, CardFooter, CardHeader, CardTitle,
 } from "./components/ui/card";
 import Autoplay from "embla-carousel-autoplay";
 import { format } from "date-fns";
-import { HeartIcon } from "./components/ui/heart-icon";
-import { BookmarkIcon } from "./components/ui/bookmark-icon";
+import { HeartIcon } from "./components/ui/animatedIcons/heart-icon";
+import { BookmarkIcon } from "./components/ui/animatedIcons/bookmark-icon";
 import { motion } from "framer-motion";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { images } from "./constants/images";
 import CommentBar from "./components/CommentBar";
 import { Spinner } from "./components/ui/spinner";
-import { EyeIcon, type ExternalLinkIconHandle } from "./components/ui/eye-icon";
+import { EyeIcon, type ExternalLinkIconHandle, } from "./components/ui/animatedIcons/eye-icon";
 import CountUp from "./components/reactbits/CountUp";
 import SpotlightCard from "./components/reactbits/SpotlightCard";
-import { EllipsisVerticalIcon } from "./components/ui/ellipsis-vertical-icon";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "./components/ui/dropdown-menu";
-import { UserPenIcon, type UserPenHandle } from "./components/ui/user-pen-icon";
-import {
-  TrashIcon,
-  type DashboardIconHandle,
-} from "./components/ui/trash-icon";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "./components/ui/dialog";
+import { EllipsisVerticalIcon } from "./components/ui/animatedIcons/ellipsis-vertical-icon";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
+  DropdownMenuTrigger } from "./components/ui/dropdown-menu";
+import { UserPenIcon, type UserPenHandle } from "./components/ui/animatedIcons/user-pen-icon";
+import { TrashIcon, type DashboardIconHandle } from "./components/ui/animatedIcons/trash-icon";
+import { Dialog, DialogContent, DialogDescription, DialogFooter,
+  DialogHeader, DialogTitle } from "./components/ui/dialog";
 import { FieldLabel } from "./components/ui/field";
+import { Textarea } from "./components/ui/textarea";
+import { ChevronRightIcon } from "./components/ui/animatedIcons/chevron-right-icon";
+import { ChevronLeftIcon } from "./components/ui/animatedIcons/chevron-left-icon";
 
-// TO DO: Add forward and prev image buttons
 // TO DO: Add skeleton
 
 // Route: "/post/[:id]"
@@ -208,20 +176,8 @@ function PostDetails() {
     if (id) {
       try {
         const response = await fetchSpecificPost(id);
-        let unfiltered = {
-          $id: response.$id,
-          Title: response.Title,
-          Body: response.Body,
-          Pictures: response.Pictures,
-          Comments: response.Comments,
-          Userid: response.Userid,
-          Views: response.Views,
-          Likes: response.Likes,
-          Saves: response.Saves,
-          $createdAt: response.$createdAt,
-          $updatedAt: response.$updatedAt,
-        };
-        setPost(unfiltered);
+
+        setPost(response as unknown as Post);
       } catch (error: any) {
         console.log("Error [Details.tsx]: Fetching post by id");
         console.log(error.message);
@@ -237,7 +193,7 @@ function PostDetails() {
 
   // Carousel autoplay plugin
   const plugin = React.useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: true }),
+    Autoplay({ delay: 6000, stopOnInteraction: true }),
   );
 
   const EyeIconRef = useRef<ExternalLinkIconHandle>(null);
@@ -488,10 +444,10 @@ function PostDetails() {
 
         <DropdownMenuContent
           side="right"
-          className="bg-[#171718]/60 backdrop-blur-xl border border-white/10 shadow-xl"
+          className="bg-[#171718]/60 backdrop-blur-xl border border-[#27B1FC]/30 transition-all duration-250 transform hover:border-[#27B1FC]/60 shadow-xl"
         >
           <DropdownMenuItem
-            className="text-white font-bold cursor-pointer"
+            className="text-white font-bold cursor-pointer mt-1" 
             onMouseEnter={() => userPenRef.current?.startAnimation()}
             onMouseLeave={() => userPenRef.current?.stopAnimation()}
             onClick={() => handleEditView()}
@@ -500,10 +456,10 @@ function PostDetails() {
             Edit
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className=" bg-[#27B1FC]/40 my-2" />
 
           <DropdownMenuItem
-            className="text-destructive focus:text-destructive focus:bg-destructive/40 [&_svg]:text-destructive font-bold cursor-pointer"
+            className="text-destructive focus:text-destructive focus:bg-destructive/40 [&_svg]:text-destructive font-bold cursor-pointer mb-1"
             onMouseEnter={() => trashCanRef.current?.startAnimation()}
             onMouseLeave={() => trashCanRef.current?.stopAnimation()}
             onClick={() => {
@@ -522,6 +478,45 @@ function PostDetails() {
   const [newTitle, setNewTitle] = useState("");
   const [newBody, setNewBody] = useState("");
 
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+
+  const [progress, setProgress] = useState(0)
+  
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap() + 1);
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
+  }, [api]);
+
+
+  useEffect(() => {
+      if (!api) return
+
+      const autoplay = plugin.current
+      if (!autoplay) return
+
+      const interval = setInterval(() => {
+
+          const timeRemaining = autoplay.timeUntilNext()
+              const delay = autoplay.options.delay ?? 1 as any
+
+              if (timeRemaining !== null) {
+                  setProgress(1 - timeRemaining / delay)
+          }
+      }, 50)
+
+      return () => clearInterval(interval)
+  }, [api]) 
+  
+
   return (
     <div className="min-h-screen flex justify-center px-4 py-12 pb-25">
       <div className="w-full max-w-4xl space-y-8">
@@ -529,49 +524,99 @@ function PostDetails() {
           <p>Loading</p>
         ) : (
           <>
-            <div className="relative w-full h-100 transition-all duration-800  cursor-pointer rounded-xl overflow-hidden">
+            <div className="relative w-full h-100 transition-all duration-800 cursor-pointer rounded-xl overflow-hidden">
               {pictures.length > 0 ? (
-                <Carousel
-                  plugins={[plugin.current]}
-                  className="w-full h-full"
-                  onMouseEnter={plugin.current.stop}
-                  onMouseLeave={plugin.current.reset}
-                >
-                  <CarouselContent>
-                    {pictures.map((link: string, index: number) => (
-                      <CarouselItem key={index}>
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{
-                            duration: 300,
-                            type: "spring",
-                            stiffness: 200,
-                            damping: 20,
-                            delay: index * 0.35,
-                          }}
-                          className="relative w-full h-[60vh] overflow-hidden rounded-xl"
-                        >
-                          <img
-                            src={link}
-                            alt=""
-                            className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-60"
-                          />
-                          <div className="absolute inset-0 bg-black/20" />
-                          <img
-                            src={link}
-                            alt={`cover_pic`}
-                            className="relative z-10 w-full h-full object-contain rounded-2xl"
-                          />
-                        </motion.div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                </Carousel>
+                <>
+                  <Carousel
+                    plugins={[plugin.current]}
+                    className="w-full h-full"
+                    onMouseEnter={plugin.current.stop}
+                    onMouseLeave={() => {
+                      plugin.current.reset()
+                      plugin.current.play()
+
+                    }}
+                    setApi={setApi}
+                  >
+                    <CarouselContent>
+                      {pictures.map((link: string, index: number) => (
+                        <CarouselItem key={index}>
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{
+                              duration: 300,
+                              type: "spring",
+                              stiffness: 200,
+                              damping: 20,
+                              delay: index * 0.35,
+                            }}
+                            className="relative w-full h-[60vh] overflow-hidden rounded-xl"
+                          >
+                            <img
+                              src={link}
+                              alt=""
+                              className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-60"
+                            />
+                            <div className="absolute inset-0 bg-black/20" />
+                            <img
+                              src={link}
+                              alt={`cover_pic`}
+                              className="relative z-10 w-full h-full object-contain rounded-2xl"
+                            />
+                          </motion.div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                  </Carousel>
+                </>
               ) : (
                 <Grainient />
               )}
             </div>
+
+            {count > 1 &&
+
+              <>
+              <div className='flex flex-row items-center justify-center gap-4 px-4 -mt-5'>
+                {Array.from({ length: count }).map((_, index) => (
+                    <div
+                        className={` rounded-full overflow-hidden bg-[#222c36] transition-all transform duration-150 ${index + 1 === current ? 'scale-110 -translate-y-0.5 shadow-[0_0_10px_#27B1FC] h-2' : 'scale-100 h-1'} `}
+                        style={{width: `${100 / count}%`}}
+                    >
+                        <div 
+                            className='bg-[#27B1FC] h-full transition-all duration-75 rounded-r-2xl ' 
+                            style={{
+                                width: index + 1 < current 
+                                    ? '100%'
+                                    : index + 1 === current
+                                        ? `${progress * 100}%`
+                                        : '0%'
+                            }} 
+                        />
+                    </div>
+                ))}
+              </div>
+
+              <div className=" -mt-4 flex items-center justify-center gap-3">
+                <div onClick={() => api?.scrollPrev()} className=" ml-auto border flex items-center justify-center p-1 rounded-full border-white/20 bg-black/20 shadow-2xl cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.03];">
+                  <ChevronLeftIcon />
+                </div>
+                <div className=" flex flex-row gap-3 border border-white/20 p-3 rounded-2xl bg-black/20 shadow-xl">
+                  {Array.from({ length: count }).map((_, index) => (
+                    <div
+                    className={`w-3 h-3 rounded-full ${index + 1 <= current ? "bg-[#27B1FC]" : "bg-[#222c36] border border-white/30 "}  `}
+                    />
+                  ))}
+                </div>
+                <div onClick={() => api?.scrollNext()} className="border flex items-center justify-center p-1 rounded-full border-white/20 bg-black/20 shadow-2xl cursor-pointer transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.03];">
+                  <ChevronRightIcon />
+                </div>
+                <p className="text-muted-foreground text-xs font-thin ml-auto "> Image {current} of {count} </p>
+              </div>
+              </>
+            }
+
 
             <div className="space-y-4">
               <motion.div
@@ -633,7 +678,7 @@ function PostDetails() {
                   onMouseLeave={() => EyeIconRef.current?.stopAnimation()}
                 >
                   <SpotlightCard
-                    className="custom-spotlight-card border py-3.5 px-3 flex flex-row gap-3 items-center rounded-2xl cursor-pointer"
+                    className="custom-spotlight-card border border-white/20 shadow-xl py-3.5 px-3 flex flex-row gap-3 items-center rounded-2xl cursor-pointer "
                     spotlightColor="rgba(200, 200, 200, 0.4)"
                   >
                     <EyeIcon
@@ -662,7 +707,7 @@ function PostDetails() {
                     type: "spring",
                     delay: 0.8,
                   }}
-                  className="bg-[#171718] flex p-3.5 gap-4 rounded-2xl items-center "
+                  className="bg-[#171718] flex p-3.5 gap-4 rounded-2xl items-center border border-white/20 shadow-xl"
                 >
                   <HeartIcon
                     onClick={
@@ -710,7 +755,7 @@ function PostDetails() {
               </motion.div>
             </div>
 
-            <div className="w-full h-1 bg-[gray]/30 rounded-2xl" />
+            <div className='h-1 w-full bg-[#27B1FC]/20 mb-8 rounded-2xl' />
 
             {/* Comments section */}
             <motion.div
@@ -722,7 +767,7 @@ function PostDetails() {
                 delay: 1.4,
               }}
             >
-              <Card className="bg-[#171718]/50 border-none">
+              <Card className="bg-[#171718]/50 border border-[#27B1FC]/30 transition-all duration-250 transform hover:border-[#27B1FC]/60 shadow-2xl">
                 <CardHeader>
                   <CardTitle className="text-xl font-bold text-white">
                     Comments{" "}
@@ -835,14 +880,14 @@ function PostDetails() {
 
                 <div>
                   <FieldLabel>New Body</FieldLabel>
-                  <Input
+                  <Textarea
                     id={`input-field-body`}
-                    type={"text"}
                     value={newBody}
                     placeholder={`Edit your body`}
                     onChange={(e) => {
                       setNewBody(e.target.value);
                     }}
+                    rows={8}
                     className="bg-[#171718]/50 border-0 shadow-2xl mt-2"
                   />
                 </div>

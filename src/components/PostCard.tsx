@@ -2,47 +2,36 @@ import { useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "./ui/button";
-import {
-  MessageCircleIcon,
-  type MessageCircleIconHandle,
-} from "./ui/message-circle-icon";
-import { BookmarkIcon, type BookmarkIconHandle } from "./ui/bookmark-icon";
-import { HeartIcon, type HeartIconHandle } from "./ui/heart-icon";
-import { EyeIcon, type ExternalLinkIconHandle } from "./ui/eye-icon";
-import {
-  deleteComment,
-  deletePicture,
-  deletePost,
-  getLivePicture,
-} from "../services/appwriteServices";
-import {
-  ChevronDownIcon,
-  type ChevronDownIconHandle,
-} from "./ui/chevron-down-icon";
-import { ChevronUpIcon, type ChevronUpIconHandle } from "./ui/chevron-up-icon";
+import { MessageCircleIcon, type MessageCircleIconHandle} 
+  from "./ui/animatedIcons/message-circle-icon";
+import { BookmarkIcon, type BookmarkIconHandle } 
+  from "./ui/animatedIcons/bookmark-icon";
+import { HeartIcon, type HeartIconHandle } from "./ui/animatedIcons/heart-icon";
+import { EyeIcon, type ExternalLinkIconHandle } from "./ui/animatedIcons/eye-icon";
+import { changefeaturedPost, deleteComment, deletePicture, 
+  deletePost, getLivePicture } from "../services/appwriteServices";
+import { ChevronDownIcon, type ChevronDownIconHandle } 
+  from "./ui/animatedIcons/chevron-down-icon";
+import { ChevronUpIcon, type ChevronUpIconHandle } 
+  from "./ui/animatedIcons/chevron-up-icon";
 import CoverPhoto from "./CoverPhoto";
 import SpotlightCard from "./reactbits/SpotlightCard";
-import { TrashIcon, type DashboardIconHandle } from "./ui/trash-icon";
-import { UserPenIcon, type UserPenHandle } from "./ui/user-pen-icon";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "./ui/dialog";
+import { TrashIcon, type DashboardIconHandle } from "./ui/animatedIcons/trash-icon";
+import { UserPenIcon, type UserPenHandle } from "./ui/animatedIcons/user-pen-icon";
+import { Dialog, DialogContent, DialogDescription, 
+  DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Spinner } from "./ui/spinner";
-import {
-  SquareArrowOutUpRightIcon,
-  type SquareArrowOutUpRightIconHandle,
-} from "./ui/square-arrow-out-up-right-icon";
+import { SquareArrowOutUpRightIcon, type SquareArrowOutUpRightIconHandle } 
+  from "./ui/animatedIcons/square-arrow-out-up-right-icon";
 import { useNavigate } from "react-router";
 import CountUp from "./reactbits/CountUp";
 import GradientText from "./reactbits/GradientText";
+import { StarIcon, type StarIconHandle } from "./ui/animatedIcons/star-icon";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 // Post block used to show all users post in the posts page
-function PostCard({ post, delay, onDelete }: PostCardProps) {
+function PostCard({ post, delay, onDelete, onFeatureChange, totalFeatured }: PostCardProps) {
+
   // Post's cover photo state
   const posterPicture = post.Pictures.length > 0;
   const [miniPictureIds, setMiniPictureIds] = useState<string[]>([]);
@@ -60,6 +49,7 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
   const userPenRef = useRef<UserPenHandle>(null);
   const trashCanRef = useRef<DashboardIconHandle>(null);
   const squareArrowRef = useRef<SquareArrowOutUpRightIconHandle>(null);
+  const StarIconRef = useRef<StarIconHandle>(null);
 
   // Delete prompt
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -154,6 +144,17 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
     setShowDeleteDialog(false);
   };
 
+  const featurePost = async () => {
+    try {
+      await changefeaturedPost(post.$id, !post.Featured);
+
+      onFeatureChange(post.$id, !post.Featured);
+    } catch (error: any) {
+      console.log("Error [PostCard].tsx: Deleting post");
+      console.log(error.message);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.99, y: 1 }}
@@ -165,7 +166,7 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
         opacity: { duration: 2 },
         scale: { duration: 0.2 },
       }}
-      className="  bg-[#555555]/50 rounded-2xl cursor-pointer hover:shadow-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.03];"
+      className="  bg-[#555555]/50 rounded-2xl cursor-pointer hover:shadow-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:scale-[1.006] border border-white/16 "
       onClick={() => {
         setExpanded((prev) => !prev);
       }}
@@ -200,7 +201,21 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-bold text-lg">{post.Title}</p>
+          <p className="font-bold text-lg flex items-center">
+            {post.Title}
+            {post.Featured && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-yellow-500/70 text-xs ml-2 px-2 py-0.5 border rounded-2xl shadow-[0_0_3px_#FFEB3B] ">
+                    Featured
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="text-sm bg-black/60 ">
+                  <p>This post is featured on your public profile.</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </p>
           <p className="text-muted-foreground">
             {format(new Date(post.$createdAt), "MMM d")}
           </p>
@@ -303,7 +318,7 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
                 </div>
                 <div className="flex flex-row justify-center gap-6 mt-3 h-[70%]">
                   <SpotlightCard
-                    className="custom-spotlight-card border py-2 px-3 items-center justify-center rounded-2xl"
+                    className="custom-spotlight-card border py-2 px-3 items-center justify-center rounded-2xl border-white/44 shadow-2xl"
                     spotlightColor="rgba(200, 200, 200, 0.4)"
                   >
                     <div
@@ -336,7 +351,7 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
                   </SpotlightCard>
 
                   <SpotlightCard
-                    className="custom-spotlight-card border py-2 px-3 items-center justify-center rounded-2xl"
+                    className="custom-spotlight-card border py-2 px-3 items-center justify-center rounded-2xl border-white/44 shadow-2xl"
                     spotlightColor="rgba(255, 80, 80, 0.4)"
                   >
                     <div
@@ -371,7 +386,7 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
                   </SpotlightCard>
 
                   <SpotlightCard
-                    className="custom-spotlight-card border py-2 px-3 items-center justify-center rounded-2xl"
+                    className="custom-spotlight-card border py-2 px-3 items-center justify-center rounded-2xl border-white/44 shadow-2xl"
                     spotlightColor="rgba(39, 177, 252, 0.4)"
                   >
                     <div
@@ -408,7 +423,7 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
                   </SpotlightCard>
 
                   <SpotlightCard
-                    className="custom-spotlight-card border py-2 px-3 items-center justify-center rounded-2xl"
+                    className="custom-spotlight-card border py-2 px-3 items-center justify-center rounded-2xl border-white/44 shadow-2xl"
                     spotlightColor="rgba(168, 85, 247, 0.4)"
                   >
                     <div
@@ -443,7 +458,7 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
               </div>
 
               {/* Main post actions */}
-              <div className="flex-1/4 flex flex-col items-center">
+              <div className="flex-1/4 flex flex-col items-center border">
                 <div className="flex justify-center">
                   <p className="font-bold text-md text-[#27B1FC]">
                     Post Actions
@@ -453,12 +468,29 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
                   <div className="flex flex-row gap-2 justify-evenly">
                     <Button
                       onMouseEnter={() => {
+                        StarIconRef.current?.startAnimation();
+                      }}
+                      onMouseLeave={() => {
+                        StarIconRef.current?.stopAnimation();
+                      }}
+                      className={`flex-1 bg-yellow-500/40 hover:bg-yellow-500/70 ${post.Featured && "fill-white"} transition-all duration-300 text-slate-300 hover:text-white w-full`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        featurePost();
+                      }}
+                      disabled={totalFeatured === 3 && !post.Featured}
+                    >
+                      <StarIcon size={18} ref={StarIconRef} />
+                      {post.Featured ? "Unfeature" : "Feature Post"}
+                    </Button>
+                    <Button
+                      onMouseEnter={() => {
                         squareArrowRef.current?.startAnimation();
                       }}
                       onMouseLeave={() => {
                         squareArrowRef.current?.stopAnimation();
                       }}
-                      className={`bg-[#27B1FC]/60 hover:bg-[#27B1FC]/50 transition-all duration-300 text-slate-300 hover:text-white w-full`}
+                      className={`flex-1 bg-[#27B1FC]/60 hover:bg-[#27B1FC]/50 transition-all duration-300 text-slate-300 hover:text-white w-full`}
                       onClick={(e) => {
                         e.stopPropagation();
                         transferPost(false);
@@ -470,7 +502,9 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
                       />
                       View Post
                     </Button>
+                  </div>
 
+                  <div className="flex flex-row gap-2 justify-evenly">
                     <Button
                       onMouseEnter={() => {
                         userPenRef.current?.startAnimation();
@@ -478,7 +512,7 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
                       onMouseLeave={() => {
                         userPenRef.current?.stopAnimation();
                       }}
-                      className={`bg-[#222c36]/80 hover:bg-[#222c36]/70 transition-all duration-300 text-slate-300 hover:text-white w-full`}
+                      className={`flex-1 bg-[#222c36]/80 hover:bg-[#222c36]/70 transition-all duration-300 text-slate-300 hover:text-white w-full`}
                       onClick={(e) => {
                         e.stopPropagation();
                         transferPost(true);
@@ -487,26 +521,26 @@ function PostCard({ post, delay, onDelete }: PostCardProps) {
                       <UserPenIcon size={18} ref={userPenRef} />
                       Edit
                     </Button>
-                  </div>
 
-                  <Button
-                    onMouseEnter={() => {
-                      trashCanRef.current?.startAnimation();
-                    }}
-                    onMouseLeave={() => {
-                      trashCanRef.current?.stopAnimation();
-                    }}
-                    className={`text-destructive hover:bg-destructive/30 [&_svg]:text-destructive transition-all duration-300`}
-                    onClick={(e) => {
-                      // This stops the click going to the parent container and closes the expanded view
-                      e.stopPropagation();
-                      setExpanded(true);
-                      setShowDeleteDialog(true);
-                    }}
-                  >
-                    <TrashIcon size={18} ref={trashCanRef} />
-                    Delete
-                  </Button>
+                    <Button
+                      onMouseEnter={() => {
+                        trashCanRef.current?.startAnimation();
+                      }}
+                      onMouseLeave={() => {
+                        trashCanRef.current?.stopAnimation();
+                      }}
+                      className={`flex-1 text-destructive hover:bg-destructive/30 [&_svg]:text-destructive transition-all duration-300`}
+                      onClick={(e) => {
+                        // This stops the click going to the parent container and closes the expanded view
+                        e.stopPropagation();
+                        setExpanded(true);
+                        setShowDeleteDialog(true);
+                      }}
+                    >
+                      <TrashIcon size={18} ref={trashCanRef} />
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </div>
             </motion.div>

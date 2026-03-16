@@ -6,23 +6,15 @@ import { Button } from "./components/ui/button";
 import DecryptedText from "./components/reactbits/DecryptedText";
 import Aurora from "./components/reactbits/Aurora";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import {
-  logIn,
-  signUp,
-  signUpUpdateTable,
-  updatePrefs,
-} from "./services/appwriteServices";
+import { logIn, signUp, signUpUpdateTable, updatePrefs } from "./services/appwriteServices";
 import { useNavigate } from "react-router-dom";
 import { account } from "./lib/appwrite";
-import { EyeIcon } from "./components/ui/eye-icon";
-import { EyeOffIcon } from "./components/ui/eye-off-icon";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "./components/ui/input-group";
+import { EyeIcon } from "./components/ui/animatedIcons/eye-icon";
+import { EyeOffIcon } from "./components/ui/animatedIcons/eye-off-icon";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./components/ui/input-group";
 
 function Login() {
+  
   // Logo special characters
   const logo = "{_}";
 
@@ -56,8 +48,8 @@ function Login() {
   // If user is logged in then will just route to homepage
   useEffect(() => {
     const check = async () => {
-      // Checks Appwrite session cookie 
-      const hasSession = localStorage.getItem('sessionid')
+      // Checks Appwrite session cookie
+      const hasSession = localStorage.getItem("sessionid");
 
       if (!hasSession) {
         return;
@@ -361,7 +353,7 @@ function Login() {
         Debug {debug ? "on" : "off"}
       </Button> */}
 
-      <div className="rounded-2xl flex w-[40%] h-[80%] bg-black/10 backdrop-blur-xs shadow-2xl flex-col overflow-hidden">
+      <div className="rounded-2xl flex w-[40%] h-[80%] bg-black/10 backdrop-blur-xs shadow-2xl flex-col overflow-hidden border border-white/7">
         <div className="flex flex-1/5 justify-center items-center">
           <div className="absolute inset-0 -z-10 h-[50%]">
             {!debug && (

@@ -3,23 +3,21 @@ import { Field } from "./components/ui/field";
 import { Input } from "./components/ui/input";
 import { Card, CardContent, CardHeader } from "./components/ui/card";
 import { Skeleton } from "./components/ui/skeleton";
-import {
-  addSearchQuery,
-  checkSearchQuery,
-  queryPosts,
-  trendingSearchQuerys,
-  updateSearchQuery,
-} from "./services/appwriteServices";
+import { addSearchQuery, checkSearchQuery, queryPosts, trendingSearchQuerys, 
+  updateSearchQuery } from "./services/appwriteServices";
 import HomeCard from "./components/HomeCard";
 import GradientText from "./components/reactbits/GradientText";
 
 function Search() {
+
+  // User's query
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Searching state and results
   const [searching, setSearching] = useState(false);
-
   const [searchResults, setSearchResults] = useState<Post[] | null>(null);
 
+  // Trending keywords
   const [trending, setTrending] = useState<string[]>([]);
 
   const recordSearchQuery = async () => {
@@ -31,8 +29,9 @@ function Search() {
 
     if (response.documents.length > 0) {
       // update count
-      let prevCount = response.documents[0].Count as number;
-      await updateSearchQuery(normalized, prevCount + 1);
+      const doc = response.documents[0]
+      let count = doc.Count as number
+      await updateSearchQuery(doc.$id, count + 1);
     } else {
       // create new document
       await addSearchQuery(normalized);
@@ -46,31 +45,25 @@ function Search() {
       setSearching(true);
       setSearchResults([]);
 
-      // fetch results
-      const response = await queryPosts(searchQuery);
+      try {
+        // fetch results
+        const response = await queryPosts(searchQuery);
 
-      const unfiltered = response.documents.map((item) => {
-        const current = {
-          $id: item.$id,
-          Title: item.Title,
-          Body: item.Body,
-          Pictures: item.Pictures,
-          Comments: item.Comments,
-          Userid: item.Userid,
-          Views: item.Views,
-          Likes: item.Likes,
-          Saves: item.Saves,
-          $createdAt: item.$createdAt,
-          $updatedAt: item.$updatedAt,
-        } as Post;
-        return current;
-      });
+        const unfiltered = response.documents.map((item) => {
+          return item as unknown as Post;
+        });
 
-      setSearchResults(unfiltered);
+        setSearchResults(unfiltered);
 
-      await recordSearchQuery();
-
-      setSearching(false);
+        if(response.documents.length > 0) {
+          await recordSearchQuery();
+        }
+      } catch (error) {
+        console.log("Search failed:", error);
+        setSearchResults([]);
+      } finally {
+        setSearching(false);
+      }
     }, 600);
 
     return () => clearTimeout(timeout);
@@ -82,7 +75,7 @@ function Search() {
 
       let list: string[] = [];
       response.documents.map((item) => {
-        list.push(item.$id);
+        list.push(item.Query);
       });
 
       setTrending(list);
@@ -97,12 +90,12 @@ function Search() {
   return (
     <div className="flex flex-row px-8 py-6">
       <div className=" w-full justify-center flex flex-row gap-6">
-        <div className="flex-5/8">
+        <div className="flex-5/8 ">
           <p className="text-[#27B1FC] font-bold text-[24px]">
             Search for a post
           </p>
 
-          <div className="border-4 border-[#27B1FC]/60 mt-4 p-4 flex flex-col rounded-2xl">
+          <div className="border border-[#27B1FC]/30 transition-all duration-250 transform hover:border-[#27B1FC]/60 mt-4 p-4 flex flex-col rounded-2xl bg-[#171718]">
             <Field orientation="horizontal">
               <Input
                 type="search"
@@ -176,18 +169,18 @@ function Search() {
           <p className="text-[#27B1FC] font-bold text-[24px]">
             Trending Searches
           </p>
-          <div className="border-4 border-[#27B1FC]/60 mt-4 flex flex-col rounded-2xl">
+          <div className="border border-[#27B1FC]/30 transition-all duration-250 transform hover:border-[#27B1FC]/60 mt-4 flex flex-col rounded-2xl bg-[#171718]">
             <div className="w-full h-full p-4 gap-4 flex flex-col">
               {trending.map((item, index) => (
                 <div
-                  className="w-full"
+                  className="flex flex-1 w-full"
                   key={index.toString()}
                   onClick={() => {
                     setSearchQuery(item);
                   }}
                 >
                   <GradientText
-                    className="block w-full text-md px-2 py-1 transition-all duration-200 hover:scale-[1.2] "
+                    className="flex flex-1 w-full text-md px-2 py-1 transition-all transform duration-600 hover:scale-[1.1] border-3 border-transparent hover:border-[#27B1FC]/30 "
                     colors={["#27B1FC", "#58C2FF", "#8B5CF6"]}
                   >
                     {item}

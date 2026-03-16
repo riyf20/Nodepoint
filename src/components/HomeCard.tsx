@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import CoverPhoto from "./CoverPhoto";
 
 // Card view of posts used in the homepage
-function HomeCard({ post, delay }: HomeCardProps) {
+function HomeCard({ post, delay, best }: HomeCardProps) {
 
   // Posts image states
   const hasImages = (post.Pictures.length > 0);
@@ -52,6 +52,12 @@ function HomeCard({ post, delay }: HomeCardProps) {
     });
   };
 
+  const bestColor = 
+    best === 1 ? 'border-[#C8C8C8]/30 hover:shadow-[0_0_8px_#C8C8C8]' 
+    : best === 2 ? 'border-[#FF4D6D]/30 hover:shadow-[0_0_8px_#FF4D6D]' 
+    : best === 3 ? 'border-[#5227ff]/30 hover:shadow-[0_0_8px_#5227ff]' 
+    : 'border-[#27B1FC]/30 hover:shadow-[0_0_15px_#27B1FC]' 
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -63,7 +69,7 @@ function HomeCard({ post, delay }: HomeCardProps) {
         delay,
       }}
       onClick={transferPost}
-      className="flex w-52 flex-col cursor-pointer transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.03] hover:shadow-[0_0_15px_#27B1FC] shadow-xl p-2 rounded-2xl"
+      className={`flex w-58 flex-col cursor-pointer bg-[#1E1E20] transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.03] shadow-xl rounded-2xl border-0 ${bestColor} overflow-hidden`}
     >
       {hasImages ? (
         <img
@@ -78,9 +84,9 @@ function HomeCard({ post, delay }: HomeCardProps) {
         </div>
       )}
 
-      <p className="mt-2 mb-2 line-clamp-2">{post.Title}</p>
+      <p className="mt-2 mb-2 line-clamp-2 m-2">{post.Title}</p>
 
-      <div className="flex flex-row gap-2 font-extralight mt-auto">
+      <div className="flex flex-row gap-2 font-extralight mt-auto m-3">
         <img
           src={profilePic ? profilePicLink : images.profile}
           alt={`cover_pic`}

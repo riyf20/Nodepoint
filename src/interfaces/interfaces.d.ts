@@ -8,6 +8,7 @@ interface Post {
     Views: number,
     Likes: number,
     Saves: number,
+    Featured: boolean,
     $createdAt: string,
     $updatedAt: string,
 }
@@ -24,12 +25,16 @@ interface Comments {
 interface HomeCardProps {
     post: Post
     delay: number
+    // best liked, best commented, etc.
+    best?: number
 }
 
 interface PostCardProps {
     post: Post,
     delay: number,
     onDelete: (id: string) => void;
+    onFeatureChange: (id:string, featured: boolean) => void;
+    totalFeatured: number
 }
 
 interface CommentBarProps {
@@ -64,4 +69,26 @@ interface CommentCardProps {
 
 interface CoverPhotoProps {
     textScale: string,
+}
+
+interface User {
+    $id: string,
+    Username: string,
+    Name: string,
+    ProfilePic: boolean,
+    ProfilePicId: string,
+    Likes: string[],
+    Saves: string[],
+    Bio: string,
+    $createdAt: string,
+    $updatedAt: string,
+}
+
+interface TrendingUsers {
+    user: string;
+    score: number;
+    posts: number;
+    views: number;
+    likes: number;
+    link: string 
 }

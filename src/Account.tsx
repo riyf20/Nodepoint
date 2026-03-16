@@ -4,30 +4,24 @@ import { Field, FieldLabel } from "./components/ui/field";
 import { Input } from "./components/ui/input";
 import { checkUsernameTaken, deletePicture, getLivePicture, 
   getUser, updateEmail, updateName, updateNameTable, updatePassword, 
-  updateUsername, updateUsernameTable, uploadMedia as uploadProfilePic, uploadProfilePicTable,
+  updateUsername, updateUsernameTable, uploadMedia as uploadProfilePic, 
+  uploadProfilePicTable,
 } from "./services/appwriteServices";
 import { Button } from "./components/ui/button";
-import { UserPenIcon, type UserPenHandle } from "./components/ui/user-pen-icon";
+import { UserPenIcon, type UserPenHandle,
+} from "./components/ui/animatedIcons/user-pen-icon";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  ShieldUserIcon,
-  type ShieldUserHandle,
-} from "./components/ui/shield-user-icon";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+import { ShieldUserIcon, type ShieldUserHandle,
+} from "./components/ui/animatedIcons/shield-user-icon";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, 
+  DialogHeader, DialogTitle,
 } from "./components/ui/dialog";
 import { Spinner } from "./components/ui/spinner";
 
 // Route: "/account"
 // Account page: Quick overview of user's information, can easily change and update critical information.
 function Account() {
-  
-  // Need for verifying changes 
+  // Need for verifying changes
   const userId = localStorage.getItem("userid");
 
   // Input Fields
@@ -42,7 +36,7 @@ function Account() {
   const [nameInvalid, setNameInvalid] = useState(false);
   const [emailInvalid, setEmailInvalid] = useState(false);
   const [newPasswordInvalid, setNewPasswordInvalid] = useState(false);
-  
+
   // Validity state for security password
   const [confirmPasswordInvalid, setConfirmPasswordInvalid] = useState(false);
 
@@ -78,11 +72,11 @@ function Account() {
         localStorage.getItem("profilePicture") === "true" ? true : false;
       let profileId = localStorage.getItem("profilePictureId") ?? "";
 
-      let storedUsername = localStorage.getItem('username')
+      let storedUsername = localStorage.getItem("username");
 
       // Store all orginal data
       let originalData = {
-        username: storedUsername ?? '',
+        username: storedUsername ?? "",
         email: response.email,
         name: response.prefs.fullName,
         profilePic: profile,
@@ -91,7 +85,7 @@ function Account() {
 
       setOriginal(originalData);
 
-      setUsername(storedUsername ?? '');
+      setUsername(storedUsername ?? "");
       setEmail(response.email);
       setName(response.prefs.fullName);
       setProfilePic(profile);
@@ -137,12 +131,10 @@ function Account() {
 
   // Reused input field component
   const inputfields = ({ input, index }: inputfieldsProps) => {
-
     // Update username [Name field in appwrite]
     const saveUsername = async () => {
       try {
-
-        // Check if new username is valid (not taken) 
+        // Check if new username is valid (not taken)
         const response = await checkUsernameTaken(username);
 
         if (response) {
@@ -151,8 +143,7 @@ function Account() {
           return;
         } else {
           try {
-            
-            // Change username in Appwrite Auth and Users table 
+            // Change username in Appwrite Auth and Users table
             await updateUsername(username);
             await updateUsernameTable(userId!, username);
 
@@ -182,8 +173,7 @@ function Account() {
     // Update full name (stored within user prefs)
     const saveName = async () => {
       try {
-
-        // Change username in Appwrite Auth and Users table 
+        // Change username in Appwrite Auth and Users table
         await updateName(name);
         await updateNameTable(userId!, name);
 
@@ -213,8 +203,8 @@ function Account() {
     // Input fields | Input setters | Input validity states | Input validity state setters
     const fields = [username, name, email, newPassword];
     const setFields = [setUsername, setName, setEmail, setNewPassword];
-    const fieldInvalids = [usernameInvalid, nameInvalid, emailInvalid, newPasswordInvalid];
-    const setFieldInvalids = [setUsernameInvalid, setNameInvalid, setEmailInvalid, setNewPasswordInvalid];
+    const fieldInvalids = [ usernameInvalid, nameInvalid, emailInvalid, newPasswordInvalid ];
+    const setFieldInvalids = [ setUsernameInvalid, setNameInvalid, setEmailInvalid, setNewPasswordInvalid ];
 
     // Confirm action functions
     const submitAction = [saveUsername, saveName];
@@ -240,9 +230,8 @@ function Account() {
     const userPenRef = useRef<UserPenHandle>(null);
 
     return (
-      <div className="border rounded-2xl p-4 shadow-2xl">
+      <div className="border border-[#27B1FC]/30 rounded-2xl p-4 shadow-2xl bg-[#1E1E20] transition-all duration-250 transform hover:scale-101">
         <div className="flex items-center justify-between">
-          
           <div>
             <p className="text-sm font-medium">{input}</p>
             <p className="text-sm text-muted-foreground mt-1 ml-2">
@@ -376,7 +365,6 @@ function Account() {
 
   // Models confirm function
   const handleModelConfirm = async () => {
-
     // Image model
     if (modelMode === "image") {
       setLoading(true);
@@ -393,11 +381,10 @@ function Account() {
 
       // Upload new profile picture
       try {
-        
         // Upload to image bucket and store the id
         const response = await uploadProfilePic(newImage!);
         await uploadProfilePicTable(userId!, response.$id);
-        
+
         // Update original object
         let altered = {
           username: original!.username,
@@ -438,10 +425,8 @@ function Account() {
         setLoading(false);
       }
     } else {
-
       // Email or password model
       try {
-
         setLoading(true);
 
         // Will check which api call to make
@@ -465,7 +450,6 @@ function Account() {
           profilePicId: original!.profilePicId,
         };
         setOriginal(altered);
-
       } catch (error: any) {
         setConfirmPasswordInvalid(true);
         if (error.message.includes("Invalid credentials")) {
@@ -482,12 +466,12 @@ function Account() {
 
   return (
     <div className="flex flex-col w-full items-center justify-center ">
-      <div className=" w-[90%] mt-6 items-center justify-center">
+      <div className=" w-[50%] mt-6 items-center justify-center">
         <div className="flex flex-row">
           <p className="text-[#27B1FC] font-bold text-[24px]">Your Account</p>
         </div>
 
-        <div className="border-4 border-[#27B1FC]/60 mt-4 p-4 flex flex-col gap-6 rounded-2xl">
+        <div className="border border-[#27B1FC]/30 transition-all duration-250 transform hover:border-[#27B1FC]/60 mt-4 p-4 flex flex-col gap-6 rounded-2xl bg-[#171718]">
           <div className="flex justify-center">
             <div
               onClick={() => {

@@ -428,7 +428,7 @@ export const addSearchQuery = async (query: string) => {
     return await database.createDocument({
         databaseId: import.meta.env.VITE_APPWRITE_DATABASE_ID,
         collectionId: import.meta.env.VITE_APPWRITE_DATABASE_QUERYS_TABLE,
-        documentId: query,
+        documentId: ID.unique(),
         data: {
             "Query": query,
             "Count": 1,
@@ -436,15 +436,27 @@ export const addSearchQuery = async (query: string) => {
     })
 }
 
-export const updateSearchQuery = async (query: string, newCount: number) => {
+export const updateSearchQuery = async (docId: string, newCount: number) => {
 
     return await database.updateDocument({
         databaseId: import.meta.env.VITE_APPWRITE_DATABASE_ID,
         collectionId: import.meta.env.VITE_APPWRITE_DATABASE_QUERYS_TABLE,
-        documentId: query,
+        documentId: docId,
         data: {
             "Count": newCount
         }
     })
 }
 
+export const changefeaturedPost = async (postId: string, feature: boolean) => {
+
+    return await database.updateDocument({
+        databaseId: import.meta.env.VITE_APPWRITE_DATABASE_ID,
+        collectionId: import.meta.env.VITE_APPWRITE_DATABASE_POST_TABLE,
+        documentId: postId,
+        data: {
+            "Featured": feature,
+        }, 
+
+    })
+}
